@@ -316,8 +316,8 @@ elif page == "2. Segments (Blogs 2, 3)":
     seg_colors = {"High-Value": "#2a78d6", "Mid-Value": "#1baf7a", "Low-Value": "#B9B5D6"}
     c = st.columns(3)
     for col, (_, r) in zip(c, seg.set_index("Segment").loc[list(seg_colors)].iterrows()):
-        col.metric(f"{r.name}: {int(r.customers):,} customers", f"{r.revenue_share_pct:.1f}% of revenue",
-                   f"avg {r.frequency:.0f} orders, AED {r.revenue:,.0f}")
+        col.metric(f"{r.name} share of revenue", f"{r.revenue_share_pct:.1f}%")
+        col.caption(f"{int(r.customers):,} customers, average {r.frequency:.0f} orders and AED {r.revenue:,.0f} each")
     a, b = st.columns(2)
     with a:
         st.markdown("**Elbow method on Recency** (the bend at k = 3 to 4 picks the cluster count)")
@@ -331,10 +331,11 @@ elif page == "2. Segments (Blogs 2, 3)":
         p2 = pd.DataFrame(R["blog2"]["p2_segments"])
         chart(ui.highlight_bars(p2, "P2_segment", "customers", "customers", threshold=None, height=260, fmt=",.0f"))
     country = st.multiselect("Country", sorted(rfm.country.unique()), default=sorted(rfm.country.unique()))
-    sub = rfm[rfm.country.isin(country)].sample(min(3000, len(rfm[rfm.country.isin(country)])), random_state=1)
+    pool = rfm[rfm.country.isin(country) & (rfm.Revenue > 0)]
+    sub = pool.sample(min(3000, len(pool)), random_state=1)
     sc = alt.Chart(sub).mark_circle(size=28, opacity=0.6).encode(
         x=alt.X("Frequency:Q", scale=alt.Scale(type="log"), title="orders (log scale)"),
-        y=alt.Y("Revenue:Q", scale=alt.Scale(type="symlog"), title="revenue AED (log scale)"),
+        y=alt.Y("Revenue:Q", scale=alt.Scale(type="log"), title="revenue AED (log scale)", axis=alt.Axis(format="~s")),
         color=alt.Color("Segment:N", scale=alt.Scale(domain=list(seg_colors), range=list(seg_colors.values())), title=None),
         tooltip=["Segment", "Recency", "Frequency", alt.Tooltip("Revenue:Q", format=",.0f"), "country"])
     st.markdown("**Every customer by orders and revenue, coloured by RFM segment**")
