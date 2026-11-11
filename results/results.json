@@ -1,0 +1,803 @@
+{
+  "backend": {
+    "gbm": "sklearn HistGradientBoosting",
+    "sequence_model": "sklearn MLP (LSTM stand-in)"
+  },
+  "data": {
+    "customers": 30000,
+    "orders": 566342,
+    "period": [
+      "2024-01-01",
+      "2026-10-31"
+    ],
+    "campaign_retention_rows": 19524,
+    "campaign_prepaid_rows": 7815,
+    "daily_demand_rows": 15525
+  },
+  "blog1": {
+    "north_star": "Monthly Revenue = Active Customers x Orders per Customer x Average Revenue per Order",
+    "revenue_last12_aed": 85160314,
+    "revenue_prev12_aed": 45174895,
+    "yoy_growth_pct": 88.5,
+    "avg_monthly_retention_last12_pct": 75.9,
+    "avg_new_customer_ratio_last12_pct": 10.6,
+    "cohort_m1_retention_pct": 68.1,
+    "cohort_m6_retention_pct": 50.6,
+    "cohort_m12_retention_pct": 35.6,
+    "cod_share_last12_pct": 39.3,
+    "cod_failed_rate_last12_pct": 17.19,
+    "delivery_success_last12_pct": 92.52,
+    "failed_deliveries_last12": 25853,
+    "failed_delivery_cost_last12_aed": 646325,
+    "cod_failed_rate_by_country_pct": {
+      "EGY": 20.86,
+      "KSA": 16.76,
+      "UAE": 12.25
+    }
+  },
+  "blog2": {
+    "elbow_inertia": {
+      "1": 240.96,
+      "2": 43.56,
+      "3": 19.07,
+      "4": 10.57,
+      "5": 6.32,
+      "6": 4.64,
+      "7": 3.39,
+      "8": 2.45,
+      "9": 1.98,
+      "10": 1.62
+    },
+    "k_used": 4,
+    "segments": [
+      {
+        "Segment": "High-Value",
+        "customers": 6391,
+        "recency": 16.85,
+        "frequency": 33.62,
+        "revenue": 8461.81,
+        "revenue_total": 54079402.74,
+        "cod_reliability": 0.85,
+        "revenue_share_pct": 63.5
+      },
+      {
+        "Segment": "Low-Value",
+        "customers": 7277,
+        "recency": 201.78,
+        "frequency": 5.61,
+        "revenue": 1333.09,
+        "revenue_total": 9700924.27,
+        "cod_reliability": 0.84,
+        "revenue_share_pct": 11.39
+      },
+      {
+        "Segment": "Mid-Value",
+        "customers": 8593,
+        "recency": 39.0,
+        "frequency": 10.45,
+        "revenue": 2488.07,
+        "revenue_total": 21379986.77,
+        "cod_reliability": 0.84,
+        "revenue_share_pct": 25.11
+      }
+    ],
+    "p2_segments": [
+      {
+        "P2_segment": "At-Risk",
+        "customers": 1275,
+        "revenue": 6468.804,
+        "discount_share": 0.39
+      },
+      {
+        "P2_segment": "Convenience Buyers",
+        "customers": 7309,
+        "revenue": 5575.354,
+        "discount_share": 0.248
+      },
+      {
+        "P2_segment": "Deal Hunters",
+        "customers": 3212,
+        "revenue": 1934.591,
+        "discount_share": 0.791
+      },
+      {
+        "P2_segment": "Loyal Value Seekers",
+        "customers": 2001,
+        "revenue": 8431.376,
+        "discount_share": 0.447
+      },
+      {
+        "P2_segment": "Occasional",
+        "customers": 8464,
+        "revenue": 1545.042,
+        "discount_share": 0.268
+      }
+    ],
+    "customers_scored": 22261
+  },
+  "blog3": {
+    "feature_window": "2026-01-01 to 2026-03-31",
+    "ltv_window": "2026-04-01 to 2026-09-30",
+    "customers": 13018,
+    "ltv_clusters": [
+      {
+        "LTVCluster": 0,
+        "count": 7152,
+        "mean": 691.6,
+        "min": 0.0,
+        "max": 1995.5
+      },
+      {
+        "LTVCluster": 1,
+        "count": 4399,
+        "mean": 3291.4,
+        "min": 1998.2,
+        "max": 5206.7
+      },
+      {
+        "LTVCluster": 2,
+        "count": 1467,
+        "mean": 7115.3,
+        "min": 5214.1,
+        "max": 11906.6
+      }
+    ],
+    "benchmark_accuracy_pct": 54.95,
+    "test_accuracy_default_pct": 61.29,
+    "test_accuracy_tuned_pct": 62.56,
+    "macro_f1_tuned": 0.54,
+    "per_class": {
+      "0": {
+        "precision": 0.676,
+        "recall": 0.832,
+        "f1-score": 0.746
+      },
+      "1": {
+        "precision": 0.502,
+        "recall": 0.38,
+        "f1-score": 0.432
+      },
+      "2": {
+        "precision": 0.588,
+        "recall": 0.355,
+        "f1-score": 0.443
+      }
+    }
+  },
+  "blog4_churn": {
+    "definition": "Active Jan-Jun 2026 (snapshot 30 Jun 2026); churned = no order 1 Jul to 28 Sep 2026",
+    "customers": 16540,
+    "churn_rate_pct": 29.2,
+    "decision_tree_depth3": {
+      "precision": 0.781,
+      "recall": 0.684,
+      "f1": 0.729,
+      "accuracy_pct": 85.18
+    },
+    "tuned_gbm": {
+      "roc_auc": 0.887,
+      "threshold": 0.37,
+      "precision": 0.776,
+      "recall": 0.704,
+      "f1": 0.738,
+      "accuracy_pct": 85.42
+    },
+    "majority_baseline_accuracy_pct": 70.81,
+    "top20pct_capture_of_churners_pct": 60.31,
+    "decision_tree_top_features": {
+      "Recency": 0.932,
+      "recency_over_gap": 0.054,
+      "avg_gap": 0.01,
+      "orders_prev90": 0.005,
+      "std_gap": 0.0,
+      "Revenue": 0.0
+    }
+  },
+  "blog4_refusal": {
+    "train_period": "2025-01-01 to 2026-04-30",
+    "test_period": "2026-05-01 to 2026-10-31",
+    "cod_orders_test": 70741,
+    "failed_rate_test_pct": 17.19,
+    "decision_tree_auc": 0.789,
+    "tuned_gbm_auc": 0.829,
+    "top10pct_failed_rate_pct": 62.2,
+    "top10pct_capture_pct": 36.2,
+    "top30pct_capture_pct": 72.6,
+    "tiers": [
+      {
+        "tier": "High",
+        "orders": 10612,
+        "failed": 5851,
+        "failed_rate": 55.14
+      },
+      {
+        "tier": "Low",
+        "orders": 42444,
+        "failed": 2253,
+        "failed_rate": 5.31
+      },
+      {
+        "tier": "Medium",
+        "orders": 17685,
+        "failed": 4056,
+        "failed_rate": 22.93
+      }
+    ],
+    "lift_table": [
+      {
+        "decile": 1,
+        "orders": 7074,
+        "failed_rate": 0.622,
+        "capture_pct": 36.1842
+      },
+      {
+        "decile": 2,
+        "orders": 7074,
+        "failed_rate": 0.3815,
+        "capture_pct": 58.3799
+      },
+      {
+        "decile": 3,
+        "orders": 7074,
+        "failed_rate": 0.2453,
+        "capture_pct": 72.648
+      },
+      {
+        "decile": 4,
+        "orders": 7074,
+        "failed_rate": 0.1517,
+        "capture_pct": 81.472
+      },
+      {
+        "decile": 5,
+        "orders": 7074,
+        "failed_rate": 0.1033,
+        "capture_pct": 87.4836
+      },
+      {
+        "decile": 6,
+        "orders": 7074,
+        "failed_rate": 0.069,
+        "capture_pct": 91.4967
+      },
+      {
+        "decile": 7,
+        "orders": 7074,
+        "failed_rate": 0.0556,
+        "capture_pct": 94.7286
+      },
+      {
+        "decile": 8,
+        "orders": 7074,
+        "failed_rate": 0.0441,
+        "capture_pct": 97.2944
+      },
+      {
+        "decile": 9,
+        "orders": 7074,
+        "failed_rate": 0.027,
+        "capture_pct": 98.8651
+      },
+      {
+        "decile": 10,
+        "orders": 7075,
+        "failed_rate": 0.0195,
+        "capture_pct": 100.0
+      }
+    ]
+  },
+  "blog8_prepaid": {
+    "customers": 7815,
+    "test_customers": 3126,
+    "ate_pct_points": 12.54,
+    "prepaid_rate_control_pct": 21.57,
+    "prepaid_rate_treated_pct": 34.11,
+    "cashback_aed": 10.0,
+    "message_cost_aed": 0.1,
+    "policies": {
+      "No one": {
+        "targeted_pct": 0.0,
+        "value_per_customer_aed": 1.595,
+        "incremental_vs_no_one_aed": 0.0
+      },
+      "Everyone": {
+        "targeted_pct": 100.0,
+        "value_per_customer_aed": -0.969,
+        "incremental_vs_no_one_aed": -2.564
+      },
+      "Random 50%": {
+        "targeted_pct": 49.68,
+        "value_per_customer_aed": 0.394,
+        "incremental_vs_no_one_aed": -1.201
+      },
+      "Uplift (CATE > 0)": {
+        "targeted_pct": 72.71,
+        "value_per_customer_aed": -0.616,
+        "incremental_vs_no_one_aed": -2.212
+      },
+      "Net value CATE > 0": {
+        "targeted_pct": 1.73,
+        "value_per_customer_aed": 1.592,
+        "incremental_vs_no_one_aed": -0.003
+      }
+    },
+    "card_saved_share_of_targeted_pct": 42.59,
+    "avg_cate_targeted_pct_points": 23.83
+  },
+  "problem1_impact": {
+    "assumptions": {
+      "confirmation_effect": 0.3,
+      "message_cost_aed": 0.15,
+      "prepaid_failure_rate": 0.012,
+      "failed_delivery_cost_aed": 25.0,
+      "high_tier_switch_to_prepaid_pct": 0.41
+    },
+    "months_in_test": 6.0,
+    "cod_orders": 70741,
+    "failed_before": 12160,
+    "failed_after_expected": 9172,
+    "failed_rate_before_pct": 17.19,
+    "failed_rate_after_pct": 12.96,
+    "relative_reduction_pct": 24.58,
+    "net_saving_test_period_aed": 70030,
+    "net_saving_annualised_aed": 139600,
+    "sensitivity": [
+      {
+        "confirmation_effect_pct": 15,
+        "failed_rate_after_pct": 15.06,
+        "relative_reduction_pct": 12.38,
+        "net_saving_annualised_aed": 65721
+      },
+      {
+        "confirmation_effect_pct": 30,
+        "failed_rate_after_pct": 12.96,
+        "relative_reduction_pct": 24.58,
+        "net_saving_annualised_aed": 139600
+      },
+      {
+        "confirmation_effect_pct": 45,
+        "failed_rate_after_pct": 10.87,
+        "relative_reduction_pct": 36.77,
+        "net_saving_annualised_aed": 213479
+      }
+    ]
+  },
+  "problem1_ab": {
+    "city": "Riyadh",
+    "orders_test": 5213,
+    "orders_control": 5213,
+    "failed_rate_test_pct": 13.72,
+    "failed_rate_control_pct": 17.76,
+    "t_statistic": -5.683,
+    "p_value": 1.36e-08,
+    "significant": true,
+    "effect_size_d": -0.1142,
+    "required_sample_per_group": 1204,
+    "tier_balance": {
+      "High": {
+        "control": 817,
+        "test": 817
+      },
+      "Low": {
+        "control": 3056,
+        "test": 3056
+      },
+      "Medium": {
+        "control": 1340,
+        "test": 1340
+      }
+    }
+  },
+  "blog7": {
+    "customers": 19524,
+    "avg_order_value_aed": 248.5,
+    "control_conversion_pct": 40.73,
+    "uplift": {
+      "Price Match": {
+        "conversion_rate_pct": 44.43,
+        "conversion_uplift_pct_points": 3.7,
+        "order_uplift": 242.0,
+        "revenue_uplift_aed": 60128
+      },
+      "Membership Trial": {
+        "conversion_rate_pct": 47.66,
+        "conversion_uplift_pct_points": 6.92,
+        "order_uplift": 447.2,
+        "revenue_uplift_aed": 111116
+      }
+    },
+    "test_auc": 0.773,
+    "predicted_vs_real": {
+      "Price Match": {
+        "real_order_uptick": 207.2,
+        "predicted_order_uptick": 154.9,
+        "error_pct": 25.3,
+        "real_revenue_uptick_aed": 51485,
+        "predicted_revenue_uptick_aed": 38481
+      },
+      "Membership Trial": {
+        "real_order_uptick": 216.3,
+        "predicted_order_uptick": 227.9,
+        "error_pct": 5.4,
+        "real_revenue_uptick_aed": 53737,
+        "predicted_revenue_uptick_aed": 56626
+      }
+    },
+    "conversion_by_discount_share": [
+      {
+        "disc_bucket": "0-20%",
+        "Membership Trial": 0.426,
+        "No Offer": 0.396,
+        "Price Match": 0.349
+      },
+      {
+        "disc_bucket": "20-40%",
+        "Membership Trial": 0.554,
+        "No Offer": 0.481,
+        "Price Match": 0.516
+      },
+      {
+        "disc_bucket": "40-60%",
+        "Membership Trial": 0.476,
+        "No Offer": 0.378,
+        "Price Match": 0.48
+      },
+      {
+        "disc_bucket": "60-100%",
+        "Membership Trial": 0.339,
+        "No Offer": 0.249,
+        "Price Match": 0.353
+      }
+    ]
+  },
+  "blog8_retention": {
+    "margin_used": 0.2,
+    "impression_cost_aed": 0.1,
+    "price_match_cost": "10% of order value, max AED 60",
+    "membership_cost_aed": 12.0,
+    "ate_pct_points": {
+      "Price Match": 3.07,
+      "Membership Trial": 8.13
+    },
+    "policies": {
+      "No offer to anyone": {
+        "profit_per_customer_aed": 20.162,
+        "incremental_vs_no_offer_aed": 0.0,
+        "share_offered_pct": 0.0
+      },
+      "Price Match to everyone": {
+        "profit_per_customer_aed": 11.736,
+        "incremental_vs_no_offer_aed": -8.425,
+        "share_offered_pct": 100.0
+      },
+      "Membership Trial to everyone": {
+        "profit_per_customer_aed": 18.896,
+        "incremental_vs_no_offer_aed": -1.266,
+        "share_offered_pct": 100.0
+      },
+      "Random allocation": {
+        "profit_per_customer_aed": 16.845,
+        "incremental_vs_no_offer_aed": -3.317,
+        "share_offered_pct": 66.18
+      },
+      "Best average arm (Membership Trial)": {
+        "profit_per_customer_aed": 18.896,
+        "incremental_vs_no_offer_aed": -1.266,
+        "share_offered_pct": 100.0
+      },
+      "X-Learner (max CATE)": {
+        "profit_per_customer_aed": 16.826,
+        "incremental_vs_no_offer_aed": -3.336,
+        "share_offered_pct": 85.42
+      },
+      "Net value X-Learner": {
+        "profit_per_customer_aed": 20.788,
+        "incremental_vs_no_offer_aed": 0.626,
+        "share_offered_pct": 21.97
+      }
+    },
+    "recommendation_mix": [
+      {
+        "type": "Deal Hunters (discount share >= 60%)",
+        "Membership Trial": 0.292,
+        "No Offer": 0.577,
+        "Price Match": 0.131
+      },
+      {
+        "type": "Others",
+        "Membership Trial": 0.171,
+        "No Offer": 0.808,
+        "Price Match": 0.021
+      }
+    ],
+    "expected_incremental_orders_per_10k": 295,
+    "expected_incremental_orders_per_10k_targeted": 1342
+  },
+  "blog9_problem2": {
+    "one_way_anova_conversion": {
+      "F": 31.66,
+      "p_value": 1.87e-14
+    },
+    "t_test_price_match_vs_control": {
+      "t": 4.28,
+      "p_value": 1.92e-05
+    },
+    "t_test_membership_vs_control": {
+      "t": 7.96,
+      "p_value": 1.89e-15
+    },
+    "two_way_anova": [
+      {
+        "term": "segment",
+        "sum_sq": 39.4158,
+        "df": 1,
+        "F": 161.6357,
+        "p_value": 0.0
+      },
+      {
+        "term": "offer",
+        "sum_sq": 15.7704,
+        "df": 2,
+        "F": 32.3355,
+        "p_value": 0.0
+      },
+      {
+        "term": "segment:offer",
+        "sum_sq": 2.1792,
+        "df": 2,
+        "F": 4.4683,
+        "p_value": 0.0115
+      },
+      {
+        "term": "Residual",
+        "sum_sq": 4759.5825,
+        "df": 19518,
+        "F": NaN,
+        "p_value": NaN
+      }
+    ],
+    "sample_size_5pct_relative_lift": {
+      "control_conversion_pct": 40.73,
+      "effect_size_d": 0.0415,
+      "per_group": 9137
+    },
+    "sampling_check_high_value_share_gap_pct_points": {
+      "random_split_sd": 1.044,
+      "stratified_split_sd": 0.0
+    },
+    "conversion_by_segment_and_offer_pct": {
+      "Deal Hunter": {
+        "Membership Trial": 34.79,
+        "No Offer": 25.7,
+        "Price Match": 36.2
+      },
+      "Other": {
+        "Membership Trial": 49.47,
+        "No Offer": 42.79,
+        "Price Match": 45.6
+      }
+    }
+  },
+  "blog5": {
+    "feature_window": "2025-12-01 to 2026-05-31",
+    "label_window": "2026-06-01 to 2026-08-31",
+    "customers": 12118,
+    "class_share_pct": {
+      "2": 37.7,
+      "0": 35.4,
+      "1": 26.9
+    },
+    "model_comparison": {
+      "Logistic Regression": {
+        "cv_accuracy_mean": 0.6703,
+        "cv_std": 0.0049
+      },
+      "Naive Bayes": {
+        "cv_accuracy_mean": 0.6614,
+        "cv_std": 0.0092
+      },
+      "Random Forest": {
+        "cv_accuracy_mean": 0.6625,
+        "cv_std": 0.0047
+      },
+      "Decision Tree": {
+        "cv_accuracy_mean": 0.5969,
+        "cv_std": 0.0073
+      },
+      "KNN": {
+        "cv_accuracy_mean": 0.627,
+        "cv_std": 0.0027
+      },
+      "sklearn HistGradientBoosting": {
+        "cv_accuracy_mean": 0.6559,
+        "cv_std": 0.0044
+      }
+    },
+    "test_accuracy_default_pct": 65.55,
+    "test_accuracy_tuned_pct": 66.87,
+    "best_params": {
+      "learning_rate": 0.05,
+      "max_depth": 3,
+      "min_samples_leaf": 60
+    },
+    "corr_with_label": {
+      "Recency": -0.61,
+      "DayDiffMean": -0.209,
+      "DayDiff3": -0.182,
+      "DayDiff2": -0.165,
+      "DayDiffStd": -0.151,
+      "DayDiff": -0.138,
+      "member": 0.048,
+      "Revenue": 0.315,
+      "RevenueCluster": 0.333,
+      "Frequency": 0.342,
+      "FrequencyCluster": 0.374,
+      "OverallScore": 0.556,
+      "RecencyCluster": 0.599
+    }
+  },
+  "blog6": {
+    "granularity": "weekly, 3 countries x 5 categories = 15 series",
+    "train": "to 2025-12-31",
+    "test": "2026-01 to 2026-10 (includes Ramadan, Eid al-Fitr and Eid al-Adha 2026)",
+    "adjusted_r2": {
+      "lag_1": 0.028,
+      "lag_1..5": 0.212,
+      "lag_1..12": 0.345,
+      "lag_1..12 + events": 0.955
+    },
+    "accuracy": {
+      "fc_current_plan": {
+        "WAPE_all_pct": 13.21,
+        "WAPE_peak_weeks_pct": 34.45,
+        "WAPE_normal_weeks_pct": 6.18,
+        "MAPE_pct": 11.77,
+        "MAE_units": 2725.6
+      },
+      "fc_naive_last_week": {
+        "WAPE_all_pct": 12.26,
+        "WAPE_peak_weeks_pct": 29.99,
+        "WAPE_normal_weeks_pct": 6.38,
+        "MAPE_pct": 10.56,
+        "MAE_units": 2528.5
+      },
+      "fc_sequence": {
+        "WAPE_all_pct": 5.93,
+        "WAPE_peak_weeks_pct": 11.96,
+        "WAPE_normal_weeks_pct": 3.93,
+        "MAPE_pct": 5.48,
+        "MAE_units": 1223.8
+      },
+      "fc_gbm": {
+        "WAPE_all_pct": 7.19,
+        "WAPE_peak_weeks_pct": 15.94,
+        "WAPE_normal_weeks_pct": 4.29,
+        "MAPE_pct": 6.27,
+        "MAE_units": 1483.3
+      },
+      "fc_ensemble": {
+        "WAPE_all_pct": 6.19,
+        "WAPE_peak_weeks_pct": 13.44,
+        "WAPE_normal_weeks_pct": 3.78,
+        "MAPE_pct": 5.52,
+        "MAE_units": 1276.4
+      }
+    },
+    "best_model": "fc_sequence",
+    "safety_buffer_pct": 3.1,
+    "current_plan": {
+      "stockout_weeks_pct": 74.57,
+      "lost_units_pct": 5.92,
+      "leftover_units_pct": 19.35,
+      "stockout_weeks_peak_pct": 85.83,
+      "lost_units_peak_pct": 19.88
+    },
+    "forecast_plan": {
+      "stockout_weeks_pct": 31.94,
+      "lost_units_pct": 2.11,
+      "leftover_units_pct": 4.23,
+      "stockout_weeks_peak_pct": 35.83,
+      "lost_units_peak_pct": 5.43
+    },
+    "lost_units_recovered": 506607,
+    "buffer_tradeoff": [
+      {
+        "buffer_pct": 0.0,
+        "stockout_weeks_pct": 52.56,
+        "lost_units_pct": 3.42,
+        "leftover_units_pct": 2.51
+      },
+      {
+        "buffer_pct": 3.1,
+        "stockout_weeks_pct": 31.94,
+        "lost_units_pct": 2.11,
+        "leftover_units_pct": 4.23
+      },
+      {
+        "buffer_pct": 8.0,
+        "stockout_weeks_pct": 10.23,
+        "lost_units_pct": 1.05,
+        "leftover_units_pct": 8.06
+      },
+      {
+        "buffer_pct": 15.0,
+        "stockout_weeks_pct": 2.79,
+        "lost_units_pct": 0.54,
+        "leftover_units_pct": 14.49
+      }
+    ]
+  },
+  "tuning": [
+    {
+      "model": "CLV segment classifier (Blog 3)",
+      "algorithm": "HistGradientBoostingClassifier",
+      "metric": "accuracy",
+      "cv_default": 0.5995,
+      "cv_tuned": 0.6206,
+      "best_params": "{\"min_samples_leaf\": 40, \"max_leaf_nodes\": 31, \"max_iter\": 300, \"max_depth\": 3, \"learning_rate\": 0.05, \"l2_regularization\": 1.0}",
+      "candidates_tested": 16,
+      "seconds": 33.8
+    },
+    {
+      "model": "Churn model (Blog 4)",
+      "algorithm": "HistGradientBoostingClassifier",
+      "metric": "roc_auc",
+      "cv_default": 0.8875,
+      "cv_tuned": 0.8936,
+      "best_params": "{\"min_samples_leaf\": 40, \"max_leaf_nodes\": 31, \"max_iter\": 150, \"max_depth\": 4, \"learning_rate\": 0.03, \"l2_regularization\": 1.0}",
+      "candidates_tested": 16,
+      "seconds": 14.7
+    },
+    {
+      "model": "COD refusal-risk model (Blog 4 method)",
+      "algorithm": "HistGradientBoostingClassifier",
+      "metric": "roc_auc",
+      "cv_default": 0.8153,
+      "cv_tuned": 0.8169,
+      "best_params": "{\"min_samples_leaf\": 40, \"max_leaf_nodes\": 31, \"max_iter\": 300, \"max_depth\": 3, \"learning_rate\": 0.05, \"l2_regularization\": 1.0}",
+      "candidates_tested": 14,
+      "seconds": 21.4
+    },
+    {
+      "model": "Market response conversion model (Blog 7)",
+      "algorithm": "HistGradientBoostingClassifier",
+      "metric": "roc_auc",
+      "cv_default": 0.7528,
+      "cv_tuned": 0.7587,
+      "best_params": "{\"min_samples_leaf\": 80, \"max_leaf_nodes\": 15, \"max_iter\": 300, \"max_depth\": 3, \"learning_rate\": 0.1, \"l2_regularization\": 0.1}",
+      "candidates_tested": 14,
+      "seconds": 4.8
+    },
+    {
+      "model": "Next purchase day classifier (Blog 5)",
+      "algorithm": "HistGradientBoostingClassifier",
+      "metric": "accuracy",
+      "cv_default": 0.6559,
+      "cv_tuned": 0.6735,
+      "best_params": "{\"learning_rate\": 0.05, \"max_depth\": 3, \"min_samples_leaf\": 60}",
+      "candidates_tested": 24,
+      "seconds": 15.9
+    },
+    {
+      "model": "Sales forecast neural net (Blog 6, LSTM stand-in)",
+      "algorithm": "MLPRegressor",
+      "metric": "neg_mean_absolute_error",
+      "cv_default": -0.133,
+      "cv_tuned": -0.0508,
+      "best_params": "{\"learning_rate_init\": 0.01, \"hidden_layer_sizes\": [64, 32], \"alpha\": 0.01, \"activation\": \"relu\"}",
+      "candidates_tested": 12,
+      "seconds": 5.1
+    },
+    {
+      "model": "Sales forecast gradient boosting (Blog 6 extension)",
+      "algorithm": "HistGradientBoostingRegressor",
+      "metric": "neg_mean_absolute_error",
+      "cv_default": -0.0392,
+      "cv_tuned": -0.0318,
+      "best_params": "{\"min_samples_leaf\": 5, \"max_iter\": 800, \"max_depth\": 3, \"learning_rate\": 0.1, \"l2_regularization\": 1.0}",
+      "candidates_tested": 14,
+      "seconds": 14.6
+    }
+  ],
+  "runtime_seconds": 131.8
+}

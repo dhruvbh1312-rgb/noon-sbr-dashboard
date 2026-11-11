@@ -1,0 +1,8 @@
+# Full analysis stack (run src/generate_data.py and src/analysis.py)
+pandas>=2.2
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+matplotlib>=3.8
+xgboost>=2.0        # used automatically when installed (Blogs 3, 4, 5, 7)
+tensorflow>=2.15    # used automatically when installed: Keras LSTM for Blog 6
