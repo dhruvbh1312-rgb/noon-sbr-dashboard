@@ -117,13 +117,14 @@ def live_page():
         # ---- newest customer voices
         rv = snap["reviews"]
         if len(rv):
-            latest = rv.sort_values("ts", ascending=False).head(4)
+            latest = rv.sort_values("ts", ascending=False).head(3)
             cards = []
             for r in latest.itertuples(index=False):
                 cls = "spam" if r.is_spam_flag else r.sentiment
                 label = "Flagged as fake" if r.is_spam_flag else r.sentiment
+                ver = "verified purchase" if r.verified else "no verified order"
                 cards.append(f'<div class="voice {cls}"><small>{r.ts:%H:%M} in {ui.esc(r.city)}, {ui.esc(r.category)}</small>'
-                             f'<q dir="auto">{ui.esc(r.text)}</q><small>{ui.stars(r.stars)} &nbsp; {label}, {ui.esc(r.topic)}</small></div>')
+                             f'<q dir="auto">{ui.esc(r.text)}</q><small>{ui.stars(r.stars)} &nbsp; {label}, {ui.esc(r.topic)}, {ver}</small></div>')
             st.markdown(f'<div class="voices">{"".join(cards)}</div>', unsafe_allow_html=True)
 
         # ---- KPI groups by problem
@@ -131,19 +132,19 @@ def live_page():
         fail_cls = "bad" if (not np.isnan(fail) and not np.isnan(normal_fail) and fail > normal_fail + 0.03) else ""
         g1, g2, g3 = st.columns(3)
         g1.markdown(f"""<div class="group"><h4>Deliveries <span>(Problem 1)</span></h4><div class="kpis">
-<div class="kpi"><b class="{fail_cls}">{nz(fail * 100 if not np.isnan(fail) else np.nan, '.1f')}%</b><span>COD failed, normal {nz(normal_fail * 100 if not np.isnan(normal_fail) else np.nan, '.0f')}%</span></div>
-<div class="kpi"><b>{k['cod_share'] * 100:.0f}%</b><span>paid cash on delivery</span></div>
-<div class="kpi"><b>{k['high_risk_share'] * 100:.1f}%</b><span>orders flagged high risk</span></div></div></div>""",
+<div class="kpi"><b class="{fail_cls}">{nz(fail * 100 if not np.isnan(fail) else np.nan, '.1f')}%</b><span>COD failed (normal {nz(normal_fail * 100 if not np.isnan(normal_fail) else np.nan, '.0f')}%)</span></div>
+<div class="kpi"><b>{k['cod_share'] * 100:.0f}%</b><span>paid by COD</span></div>
+<div class="kpi"><b>{k['high_risk_share'] * 100:.1f}%</b><span>high-risk orders</span></div></div></div>""",
                     unsafe_allow_html=True)
         ns = k["net_sentiment"]
         g2.markdown(f"""<div class="group"><h4>Customers <span>(Problem 2)</span></h4><div class="kpis">
 <div class="kpi"><b>{nz(k['avg_stars'], '.2f')} <span class="stars">★</span></b><span>average rating</span></div>
-<div class="kpi"><b class="{'good' if not np.isnan(ns) and ns > 0 else 'bad' if not np.isnan(ns) and ns < -10 else ''}">{nz(ns, '+.0f')}</b><span>net sentiment (positive minus negative %)</span></div>
-<div class="kpi"><b>{k['spam_caught']}</b><span>fake reviews caught</span></div></div></div>""", unsafe_allow_html=True)
+<div class="kpi"><b class="{'good' if not np.isnan(ns) and ns > 0 else 'bad' if not np.isnan(ns) and ns < -10 else ''}">{nz(ns, '+.0f')}</b><span>net sentiment</span></div>
+<div class="kpi"><b>{k['spam_caught']}</b><span>fakes caught</span></div></div></div>""", unsafe_allow_html=True)
         g3.markdown(f"""<div class="group"><h4>Demand <span>(Problem 3)</span></h4><div class="kpis">
-<div class="kpi"><b>{k['orders_per_min']:.1f}</b><span>orders a minute ({k['orders']:,} in window)</span></div>
-<div class="kpi"><b>AED {k['revenue'] / 1000:,.0f}k</b><span>revenue in window</span></div>
-<div class="kpi"><b class="{'bad' if k['lost_stockout'] else ''}">{k['lost_stockout']}</b><span>orders lost to stock-outs</span></div></div></div>""",
+<div class="kpi"><b>{k['orders_per_min']:.1f}</b><span>orders a minute</span></div>
+<div class="kpi"><b>{k['revenue'] / 1000:,.0f}k</b><span>revenue (AED)</span></div>
+<div class="kpi"><b class="{'bad' if k['lost_stockout'] else ''}">{k['lost_stockout']}</b><span>lost to stock-outs</span></div></div></div>""",
                     unsafe_allow_html=True)
         st.write("")
 
@@ -165,7 +166,8 @@ def live_page():
         with right:
             st.markdown("### Orders per minute")
             if len(ow):
-                pm = ow.set_index("ts").groupby("category").resample("1min").size().rename("orders").reset_index()
+                pm = (ow.set_index("ts").groupby("category").resample("2min").size() / 2).rename("orders").reset_index()
+                pm = pm[pm.ts < pm.ts.max()]  # drop the bucket still filling
                 chart(ui.lines_by_category(pm, "ts", "orders", "orders per minute", height=250))
 
         t1, t2, t3, t4 = st.tabs(["🚚 Deliveries", "💬 Customer reviews", "📦 Stock and rival prices", "🧪 Data quality and models"])
@@ -199,7 +201,7 @@ def live_page():
                 with a:
                     st.markdown("**Negative reviews over time (% of genuine reviews)**")
                     tr = real.set_index("ts").resample("5min").sentiment.apply(
-                        lambda s: (s == "Negative").mean() * 100 if len(s) else np.nan).rename("negative %").reset_index()
+                        lambda s: (s == "Negative").mean() * 100 if len(s) >= 5 else np.nan).rename("negative %").reset_index()
                     chart(ui.single_line(tr.dropna(), "ts", "negative %", "% negative", color=ui.CRITICAL, height=240, fmt=".0f"))
                 with b:
                     st.markdown("**What customers talk about**")
@@ -212,7 +214,7 @@ def live_page():
                     pill = '<span class="pill spam">fake</span>' if r.is_spam_flag else f'<span class="pill {r.sentiment}">{r.sentiment}</span>'
                     rows.append(f'<div class="row"><time>{r.ts:%H:%M}</time><div><div class="txt" dir="auto">{ui.esc(r.text)}</div>'
                                 f'<div class="meta">{ui.stars(r.stars)} &nbsp;{ui.esc(r.city)}, {ui.esc(r.category)}, topic: {ui.esc(r.topic)}, '
-                                f'{ui.esc(r.language)}</div></div>{pill}</div>')
+                                f'{"verified purchase" if r.verified else "no verified order"}</div></div>{pill}</div>')
                 st.markdown(f'<div class="feed">{"".join(rows)}</div>', unsafe_allow_html=True)
         with t3:
             stock = pd.Series(snap["stock"]).rename("units").reset_index()
@@ -223,7 +225,7 @@ def live_page():
             if len(pr):
                 st.markdown("**Rival price index by category** (100 = our price; below 100 means the rival is cheaper)")
                 pl = pr[pr.ts >= t - timedelta(minutes=window)].melt(id_vars="ts", value_vars=CATS, var_name="category", value_name="index")
-                chart(ui.lines_by_category(pl, "ts", "index", "rival price index", height=240, rule_y=100))
+                chart(ui.lines_by_category(pl, "ts", "index", "rival price index", height=240, rule_y=100, y_domain=[80, 106]))
         with t4:
             q, mo = snap["quality"], snap["monitor"]
             a = st.columns(4)
@@ -261,8 +263,8 @@ All figures come from a synthetic dataset that behaves like a Gulf marketplace.<
 <p>COD orders that fail. Risk tiers plus WhatsApp confirmation cut failures by {p1['relative_reduction_pct']:.0f}%.</p></div>""",
                 unsafe_allow_html=True)
     c2.markdown(f"""<div class="result"><h3>🏷️ Customers switching to rivals</h3>
-<div class="ba"><span class="before">AED {b8['Price Match to everyone']['incremental_vs_no_offer_aed']:+.2f}</span><span class="after">AED {b8['Net value X-Learner']['incremental_vs_no_offer_aed']:+.2f}</span></div>
-<p>Profit per customer from retention offers: blanket price match vs net-value targeting of {b8['Net value X-Learner']['share_offered_pct']:.0f}% of customers.</p></div>""",
+<div class="ba"><span class="before">{b8['Price Match to everyone']['incremental_vs_no_offer_aed']:+.2f}</span><span class="after">{b8['Net value X-Learner']['incremental_vs_no_offer_aed']:+.2f}</span></div>
+<p>AED profit per customer from retention offers: blanket price match vs net-value targeting of {b8['Net value X-Learner']['share_offered_pct']:.0f}% of customers.</p></div>""",
                 unsafe_allow_html=True)
     c3.markdown(f"""<div class="result"><h3>📦 Ramadan and Yellow Friday spikes</h3>
 <div class="ba"><span class="before">{acc['fc_current_plan']['WAPE_peak_weeks_pct']:.1f}%</span><span class="after">{acc[best]['WAPE_peak_weeks_pct']:.1f}%</span></div>

@@ -160,10 +160,11 @@ def cat_scale():
     return alt.Scale(domain=CATS, range=CAT_COLORS)
 
 
-def lines_by_category(df: pd.DataFrame, x: str, y: str, y_title: str, x_type: str = "T", height=260, rule_y=None):
+def lines_by_category(df: pd.DataFrame, x: str, y: str, y_title: str, x_type: str = "T", height=260, rule_y=None, y_domain=None):
+    yscale = alt.Scale(domain=y_domain, zero=False, clamp=True) if y_domain else alt.Undefined
     base = alt.Chart(df).mark_line(strokeWidth=2, interpolate="monotone").encode(
         x=alt.X(f"{x}:{x_type}", title=None),
-        y=alt.Y(f"{y}:Q", title=y_title),
+        y=alt.Y(f"{y}:Q", title=y_title, scale=yscale),
         color=alt.Color("category:N", scale=cat_scale(), title=None),
         tooltip=[alt.Tooltip(f"{x}:{x_type}", title="time" if x_type == "T" else x), "category:N", alt.Tooltip(f"{y}:Q", format=",.1f")],
     )
@@ -218,10 +219,10 @@ def diverging_bars(df, cat, val, val_title, height=260, fmt="+,.2f"):
     return finish(alt.layer(bars, pos, neg, zero), height)
 
 
-def stacked_sentiment(df, cat, height=240):
+def stacked_sentiment(df, cat, height=260):
     """df columns: cat, sentiment, n"""
     ch = alt.Chart(df).mark_bar(stroke=CARD, strokeWidth=2, height={"band": 0.7}).encode(
-        y=alt.Y(f"{cat}:N", title=None, sort="-x"), x=alt.X("n:Q", title="reviews", stack=True),
+        y=alt.Y(f"{cat}:N", title=None, sort="-x", axis=alt.Axis(labelOverlap=False)), x=alt.X("n:Q", title="reviews", stack=True),
         color=alt.Color("sentiment:N", scale=alt.Scale(domain=SENT, range=SENT_COLORS), title=None),
         order=alt.Order("order:Q"), tooltip=[f"{cat}:N", "sentiment:N", "n:Q"])
     return finish(ch, height)
@@ -229,12 +230,12 @@ def stacked_sentiment(df, cat, height=240):
 
 def bars_by_category(df, x, y, y_title, facet=None, height=200, fmt=",.0f"):
     base = alt.Chart(df).mark_bar(cornerRadiusEnd=4, width={"band": 0.75}).encode(
-        x=alt.X(f"{x}:N", title=None, axis=alt.Axis(labelAngle=-30)), y=alt.Y(f"{y}:Q", title=y_title),
+        x=alt.X(f"{x}:N", title=None, sort=CATS, axis=alt.Axis(labelAngle=-35, labelOverlap=False)), y=alt.Y(f"{y}:Q", title=y_title),
         color=alt.Color("category:N", scale=cat_scale(), legend=None),
         tooltip=[f"{x}:N", alt.Tooltip(f"{y}:Q", format=fmt)] + ([f"{facet}:N"] if facet else []))
     if facet:
         ch = base.properties(width=170, height=height).facet(column=alt.Column(f"{facet}:N", title=None,
-                                                                                 header=alt.Header(labelColor=INK, labelFontSize=12)))
+                                                                                 header=alt.Header(labelColor=INK, labelFontSize=13, labelFontWeight=600, labelOrient="top")))
         return (ch.configure(font="Readex Pro", background=CARD).configure_view(stroke=None)
                 .configure_axis(labelColor=INK_2, titleColor=INK_2, gridColor="#EFEDF7", domainColor=LINE))
     return finish(base, height)
