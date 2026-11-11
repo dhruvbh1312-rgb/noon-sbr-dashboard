@@ -150,7 +150,7 @@ def finish(ch, height=260):
             .configure(font="Readex Pro", background=CARD)
             .configure_view(stroke=None)
             .configure_axis(labelColor=INK_2, titleColor=INK_2, gridColor="#EFEDF7", domainColor=LINE, tickColor=LINE,
-                            labelFontSize=11, titleFontSize=11, titleFontWeight=400)
+                            labelFontSize=11, titleFontSize=11, titleFontWeight=400, labelLimit=260)
             .configure_legend(labelColor=INK, titleColor=INK_2, orient="top", labelFontSize=11, titleFontSize=11,
                               symbolType="circle")
             .configure_title(color=INK, fontSize=13, anchor="start", fontWeight=600))
@@ -207,14 +207,17 @@ def highlight_bars(df, cat, val, val_title, threshold=None, horizontal=True, hei
 
 
 def diverging_bars(df, cat, val, val_title, height=260, fmt="+,.2f"):
+    lo, hi = float(min(df[val].min(), 0)), float(max(df[val].max(), 0))
+    pad = (hi - lo) * 0.18 or 1
+    xs = alt.Scale(domain=[lo - pad, hi + pad], nice=False)
     bars = alt.Chart(df).mark_bar(cornerRadiusEnd=4, height={"band": 0.7}).encode(
-        y=alt.Y(f"{cat}:N", title=None, sort="-x"), x=alt.X(f"{val}:Q", title=val_title),
+        y=alt.Y(f"{cat}:N", title=None, sort="-x"), x=alt.X(f"{val}:Q", title=val_title, scale=xs),
         color=alt.condition(f"datum['{val}'] >= 0", alt.value(GOOD), alt.value(CRITICAL)),
         tooltip=[f"{cat}:N", alt.Tooltip(f"{val}:Q", format=fmt)])
     pos = alt.Chart(df).transform_filter(f"datum['{val}'] >= 0").mark_text(align="left", dx=6, color=INK, fontSize=11).encode(
-        y=alt.Y(f"{cat}:N", sort="-x"), x=f"{val}:Q", text=alt.Text(f"{val}:Q", format=fmt))
+        y=alt.Y(f"{cat}:N", sort="-x"), x=alt.X(f"{val}:Q", scale=xs), text=alt.Text(f"{val}:Q", format=fmt))
     neg = alt.Chart(df).transform_filter(f"datum['{val}'] < 0").mark_text(align="right", dx=-6, color=INK, fontSize=11).encode(
-        y=alt.Y(f"{cat}:N", sort="-x"), x=f"{val}:Q", text=alt.Text(f"{val}:Q", format=fmt))
+        y=alt.Y(f"{cat}:N", sort="-x"), x=alt.X(f"{val}:Q", scale=xs), text=alt.Text(f"{val}:Q", format=fmt))
     zero = alt.Chart(pd.DataFrame({"z": [0]})).mark_rule(color=INK_2).encode(x="z:Q")
     return finish(alt.layer(bars, pos, neg, zero), height)
 
@@ -243,7 +246,7 @@ def bars_by_category(df, x, y, y_title, facet=None, height=200, fmt=",.0f"):
 
 def colored_bars(df, cat, val, val_title, colors: dict, height=220, fmt=",.0f"):
     ch = alt.Chart(df).mark_bar(cornerRadiusEnd=4, width={"band": 0.6}).encode(
-        x=alt.X(f"{cat}:N", title=None, sort=list(colors)), y=alt.Y(f"{val}:Q", title=val_title),
+        x=alt.X(f"{cat}:N", title=None, sort=list(colors), axis=alt.Axis(labelAngle=0)), y=alt.Y(f"{val}:Q", title=val_title),
         color=alt.Color(f"{cat}:N", scale=alt.Scale(domain=list(colors), range=list(colors.values())), legend=None),
         tooltip=[f"{cat}:N", alt.Tooltip(f"{val}:Q", format=fmt)])
     return finish(ch, height)

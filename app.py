@@ -342,7 +342,7 @@ elif page == "2. Segments (Blogs 2, 3)":
     st.markdown("### CLV prediction (Blog 3)")
     b3 = R["blog3"]
     c = st.columns(3)
-    c[0].metric("Benchmark accuracy (largest class)", f"{b3['benchmark_accuracy_pct']}%")
+    c[0].metric("Benchmark (largest class)", f"{b3['benchmark_accuracy_pct']}%")
     c[1].metric("Default model", f"{b3['test_accuracy_default_pct']}%")
     c[2].metric("Tuned model", f"{b3['test_accuracy_tuned_pct']}%", f"+{b3['test_accuracy_tuned_pct'] - b3['benchmark_accuracy_pct']:.1f} pts vs benchmark")
     st.dataframe(pd.DataFrame(b3["ltv_clusters"]), hide_index=True)
@@ -354,8 +354,8 @@ elif page == "Problem 1: COD refusals":
     c = st.columns(4)
     c[0].metric("COD failed rate (test period)", f"{b4['failed_rate_test_pct']}%")
     c[1].metric("Refusal model ROC-AUC", b4["tuned_gbm_auc"], f"+{b4['tuned_gbm_auc'] - b4['decision_tree_auc']:.3f} vs tree")
-    c[2].metric("Failures caught in riskiest 10%", f"{b4['top10pct_capture_pct']}%")
-    c[3].metric("Failures caught in riskiest 30%", f"{b4['top30pct_capture_pct']}%")
+    c[2].metric("Failures in riskiest 10%", f"{b4['top10pct_capture_pct']}%")
+    c[3].metric("Failures in riskiest 30%", f"{b4['top30pct_capture_pct']}%")
     lift = pd.DataFrame(b4["lift_table"])
     lift["failed %"] = (lift.failed_rate * 100).round(1)
     lift["decile"] = lift.decile.astype(str)
@@ -402,8 +402,8 @@ elif page == "Problem 2: Switching to rivals":
     c = st.columns(4)
     c[0].metric("Churn rate (90 days)", f"{ch['churn_rate_pct']}%")
     c[1].metric("Churn model ROC-AUC", ch["tuned_gbm"]["roc_auc"])
-    c[2].metric("Recall / precision", f"{ch['tuned_gbm']['recall']} / {ch['tuned_gbm']['precision']}")
-    c[3].metric("Churners caught in top 20%", f"{ch['top20pct_capture_of_churners_pct']}%")
+    c[2].metric("Churners caught (recall)", f"{ch['tuned_gbm']['recall'] * 100:.0f}%", f"precision {ch['tuned_gbm']['precision'] * 100:.0f}%", delta_color="off")
+    c[3].metric("Caught in riskiest 20%", f"{ch['top20pct_capture_of_churners_pct']}%")
     a, b = st.columns(2)
     with a:
         st.markdown("**Market response (Blog 7): conversion by offer**")
@@ -473,8 +473,8 @@ elif page == "Problem 3: Demand spikes":
     lost = (s.demand_units - np.minimum(s.demand_units, stock)).clip(lower=0)
     left = (stock - np.minimum(s.demand_units, stock)).clip(lower=0)
     k = st.columns(4)
-    k[0].metric("Stock-out weeks, current plan", f"{(s.lost_units > 0).mean() * 100:.1f}%")
-    k[1].metric("Stock-out weeks, forecast plan", f"{(lost > 0.5).mean() * 100:.1f}%")
+    k[0].metric("Stock-out weeks, today", f"{(s.lost_units > 0).mean() * 100:.1f}%")
+    k[1].metric("Stock-out weeks, forecast", f"{(lost > 0.5).mean() * 100:.1f}%")
     k[2].metric("Lost sales", f"{lost.sum() / s.demand_units.sum() * 100:.2f}%",
                 f"{(lost.sum() - s.lost_units.sum()) / s.demand_units.sum() * 100:.2f} pts vs current", delta_color="inverse")
     k[3].metric("Leftover stock", f"{left.sum() / s.demand_units.sum() * 100:.1f}%",
